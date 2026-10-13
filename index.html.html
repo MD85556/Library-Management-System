@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Library Management System</title>
+<style>
+:root {
+  --navy: #14213d;
+  --blue: #2563eb;
+  --light: #f4f7fb;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --green: #15803d;
+  --red: #b91c1c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--light); color: var(--text); }
+header { background: var(--navy); color: white; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo { width: 44px; height: 44px; border-radius: 12px; background: #fff; color: var(--navy); display: grid; place-items: center; font-size: 24px; }
+header h1 { font-size: 21px; margin: 0 0 5px; }
+header p { margin: 0; font-size: 13px; color: #dbeafe; }
+.header-tag { border: 1px solid #52617b; border-radius: 20px; padding: 8px 13px; font-size: 12px; }
+.layout { display: flex; min-height: calc(100vh - 84px); }
+.sidebar { width: 225px; background: white; border-right: 1px solid var(--border); padding: 22px 14px; flex-shrink: 0; }
+.nav-label { color: #9ca3af; font-size: 11px; font-weight: bold; letter-spacing: 1px; margin: 4px 12px 12px; }
+.nav-btn { width: 100%; border: 0; background: transparent; color: #4b5563; text-align: left; padding: 12px 13px; border-radius: 9px; margin: 3px 0; cursor: pointer; font-size: 14px; display: flex; gap: 11px; align-items: center; }
+.nav-btn:hover { background: #eff6ff; }
+.nav-btn.active { background: #eaf1ff; color: var(--blue); font-weight: bold; }
+.nav-icon { width: 20px; text-align: center; font-size: 17px; }
+main { flex: 1; padding: 28px; min-width: 0; }
+.page { display: none; }
+.page.active { display: block; }
+.page-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.page-heading h2 { margin: 0 0 7px; font-size: 25px; }
+.page-heading p { color: var(--muted); margin: 0; font-size: 14px; }
+.btn { border: 0; border-radius: 8px; padding: 10px 14px; background: var(--blue); color: white; cursor: pointer; font-weight: 600; font-size: 13px; }
+.btn:hover { filter: brightness(.94); }
+.btn.secondary { background: #e5e7eb; color: #374151; }
+.btn.green { background: var(--green); }
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
+.card, .panel { background: white; border: 1px solid var(--border); border-radius: 13px; box-shadow: 0 2px 7px rgba(15,23,42,.025); }
+.card { padding: 18px; }
+.card-top { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 13px; }
+.card-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; background: #eff6ff; font-size: 18px; }
+.card strong { display: block; font-size: 28px; margin-top: 14px; }
+.card small { display: block; color: var(--muted); margin-top: 5px; font-size: 12px; }
+.panel { padding: 20px; margin-bottom: 20px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.panel h3 { margin: 0; font-size: 16px; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 13px; }
+th { background: #f8fafc; color: #6b7280; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
+th, td { padding: 13px 12px; border-bottom: 1px solid #edf0f4; }
+tbody tr:last-child td { border-bottom: 0; }
+.badge { display: inline-block; border-radius: 20px; padding: 5px 9px; font-size: 11px; font-weight: bold; }
+.badge.green { color: #166534; background: #dcfce7; }
+.badge.orange { color: #9a3412; background: #ffedd5; }
+.badge.gray { color: #4b5563; background: #f3f4f6; }
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+input, select { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 11px; background: white; color: var(--text); font-size: 13px; min-width: 150px; }
+input:focus, select:focus { outline: 2px solid #bfdbfe; border-color: var(--blue); }
+.toolbar input { flex: 1; min-width: 190px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.form-grid label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: bold; color: #4b5563; }
+.form-grid input, .form-grid select { width: 100%; }
+.form-actions { margin-top: 15px; display: flex; gap: 9px; }
+.empty { text-align: center; color: var(--muted); padding: 25px; }
+.note { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 10px; padding: 13px 15px; font-size: 13px; line-height: 1.5; margin-bottom: 18px; }
+.warning { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+.setup-list { display: grid; gap: 12px; }
+.setup-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; }
+.setup-num { width: 28px; height: 28px; border-radius: 50%; background: #eaf1ff; color: var(--blue); display: grid; place-items: center; font-weight: bold; flex-shrink: 0; }
+.setup-item h4 { margin: 1px 0 5px; font-size: 14px; }
+.setup-item p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.footer { color: #9ca3af; font-size: 11px; text-align: center; padding: 10px; }
+.toast { position: fixed; right: 20px; bottom: 20px; background: #111827; color: white; padding: 12px 17px; border-radius: 9px; box-shadow: 0 8px 25px #0002; display: none; z-index: 10; font-size: 13px; }
+@media (max-width: 950px) { .cards { grid-template-columns: repeat(2, minmax(0,1fr)); } .sidebar { width: 190px; } main { padding: 20px; } }
+@media (max-width: 650px) {
+  .layout { display: block; }
+  .sidebar { width: 100%; border-right: 0; border-bottom: 1px solid var(--border); padding: 10px; display: flex; gap: 5px; overflow-x: auto; }
+  .nav-label { display: none; }
+  .nav-btn { width: auto; white-space: nowrap; padding: 10px; }
+  .nav-icon { display: none; }
+  main { padding: 15px; }
+  .cards { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+  .card { padding: 13px; }
+  .card strong { font-size: 24px; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">📚</div>
+    <div>
+      <h1>Library Management System</h1>
+      <p>Simple library administration dashboard</p>
+    </div>
+  </div>
+  <div class="header-tag">DBMS Mini Project · Demo</div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-label">MAIN MENU</div>
+    <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span>Dashboard</button>
+    <button class="nav-btn" data-page="students"><span class="nav-icon">♙</span>Students</button>
+    <button class="nav-btn" data-page="books"><span class="nav-icon">▤</span>Books</button>
+    <button class="nav-btn" data-page="issues"><span class="nav-icon">⇄</span>Issue &amp; Return</button>
+    <button class="nav-btn" data-page="setup"><span class="nav-icon">⚙</span>Database Setup</button>
+  </aside>
+
+  <main>
+    <section class="page active" id="dashboard">
+      <div class="page-heading">
+        <div><h2>Dashboard</h2><p>Welcome! Here's an overview of your library.</p></div>
+        <button class="btn" onclick="showPage('issues')">＋ Issue a Book</button>
+      </div>
+      <div class="cards">
+        <div class="card"><div class="card-top"><span>Total Students</span><span class="card-icon">♙</span></div><strong id="studentCount">0</strong><small>Registered students</small></div>
+        <div class="card"><div class="card-top"><span>Book Titles</span><span class="card-icon">📚</span></div><strong id="titleCount">0</strong><small>Different book titles</small></div>
+        <div class="card"><div class="card-top"><span>Book Copies</span><span class="card-icon">▤</span></div><strong id="copyCount">0</strong><small>Copies currently available</small></div>
+        <div class="card"><div class="card-top"><span>Currently Issued</span><span class="card-icon">⇄</span></div><strong id="issuedCount">0</strong><small>Books not yet returned</small></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Recent Issue Records</h3><button class="btn secondary" onclick="showPage('issues')">View all</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Book</th><th>Issue Date</th><th>Status</th></tr></thead><tbody id="recentIssues"></tbody></table></div>
+      </div>
+      <div class="note">This is a browser-based demo. You can add students, add books, issue books, and return books. Demo data is saved in this browser using local storage.</div>
+    </section>
+
+    <section class="page" id="students">
+      <div class="page-heading"><div><h2>Students</h2><p>View and register library members.</p></div></div>
+      <div class="panel">
+        <div class="panel-head"><h3>Student Records</h3><button class="btn" onclick="toggleForm('studentForm')">＋ Add Student</button></div>
+        <form id="studentForm" style="display:none" onsubmit="addStudent(event)">
+          <div class="form-grid">
+            <label>Student ID<input id="sId" type="number" required min="1"></label>
+            <label>Full Name<input id="sName" required maxlength="50"></label>
+            <label>PRN<input id="sPrn" required maxlength="20"></label>
+            <label>Department<input id="sDept" value="CSE" required maxlength="30"></label>
+            <label>Phone<input id="sPhone" required maxlength="15"></label>
+          </div>
+          <div class="form-actions"><button class="btn" type="submit">Save Student</button><button class="btn secondary" type="button" onclick="toggleForm('studentForm',false)">Cancel</button></div>
+        </form>
+        <div class="toolbar"><input id="studentSearch" placeholder="Search by name, PRN or department..." oninput="renderStudents()"></div>
+        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>PRN</th><th>Department</th><th>Phone</th></tr></thead><tbody id="studentRows"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="page" id="books">
+      <div class="page-heading"><div><h2>Books</h2><p>Manage book titles, authors, categories, and copies.</p></div></div>
+      <div class="panel">
+        <div class="panel-head"><h3>Book Catalogue</h3><button class="btn" onclick="toggleForm('bookForm')">＋ Add Book</button></div>
+        <form id="bookForm" style="display:none" onsubmit="addBook(event)">
+          <div class="form-grid">
+            <label>Book ID<input id="bId" type="number" required min="1"></label>
+            <label>Book Name<input id="bName" required maxlength="100"></label>
+            <label>Author<input id="bAuthor" required maxlength="50"></label>
+            <label>Category<input id="bCategory" required maxlength="50"></label>
+            <label>Quantity<input id="bQty" type="number" required min="0" value="1"></label>
+          </div>
+          <div class="form-actions"><button class="btn" type="submit">Save Book</button><button class="btn secondary" type="button" onclick="toggleForm('bookForm',false)">Cancel</button></div>
+        </form>
+        <div class="toolbar"><input id="bookSearch" placeholder="Search by book name, author or category..." oninput="renderBooks()"></div>
+        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Book Name</th><th>Author</th><th>Category</th><th>Available Copies</th></tr></thead><tbody id="bookRows"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="page" id="issues">
+      <div class="page-heading"><div><h2>Issue &amp; Return</h2><p>Issue a book to a student or record its return.</p></div></div>
+      <div class="panel">
+        <div class="panel-head"><h3>Issue a Book</h3></div>
+        <form onsubmit="issueBook(event)">
+          <div class="form-grid">
+            <label>Issue ID<input id="iId" type="number" required min="1"></label>
+            <label>Student<select id="iStudent" required></select></label>
+            <label>Book<select id="iBook" required></select></label>
+            <label>Issue Date<input id="iDate" type="date" required></label>
+          </div>
+          <div class="form-actions"><button class="btn" type="submit">Issue Book</button></div>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Issue History</h3></div>
+        <div class="toolbar"><input id="issueSearch" placeholder="Search by student or book..." oninput="renderIssues()"></div>
+        <div class="table-wrap"><table><thead><tr><th>Issue ID</th><th>Student</th><th>Book</th><th>Issue Date</th><th>Return Date</th><th>Status / Action</th></tr></thead><tbody id="issueRows"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="page" id="setup">
+      <div class="page-heading"><div><h2>Database Setup</h2><p>How this dashboard maps to your DBMS project.</p></div></div>
+      <div class="note warning"><strong>Important:</strong> This HTML demo does not connect directly to MySQL. It stores demo changes in this browser only. To connect it to your actual MySQL database, you need a backend such as Java, PHP, or Python.</div>
+      <div class="panel">
+        <div class="panel-head"><h3>Database Tables</h3></div>
+        <div class="setup-list">
+          <div class="setup-item"><div class="setup-num">1</div><div><h4>Student</h4><p>student_id (Primary Key), name, prn, department, phone — stores registered students.</p></div></div>
+          <div class="setup-item"><div class="setup-num">2</div><div><h4>Book</h4><p>book_id (Primary Key), book_name, author, category, quantity — stores the book catalogue.</p></div></div>
+          <div class="setup-item"><div class="setup-num">3</div><div><h4>IssueBook</h4><p>issue_id (Primary Key), student_id (Foreign Key), book_id (Foreign Key), issue_date, return_date — connects students and books.</p></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>SQL Database Commands</h3></div>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;background:#111827;color:#e5e7eb;padding:16px;border-radius:9px;font-size:13px;line-height:1.6">CREATE DATABASE library;
+USE library;
+
+CREATE TABLE Student (
+  student_id INT PRIMARY KEY,
+  name VARCHAR(50),
+  prn VARCHAR(20),
+  department VARCHAR(30),
+  phone VARCHAR(15)
+);
+
+CREATE TABLE Book (
+  book_id INT PRIMARY KEY,
+  book_name VARCHAR(100),
+  author VARCHAR(50),
+  category VARCHAR(50),
+  quantity INT
+);
+
+CREATE TABLE IssueBook (
+  issue_id INT PRIMARY KEY,
+  student_id INT,
+  book_id INT,
+  issue_date DATE,
+  return_date DATE,
+  FOREIGN KEY (student_id) REFERENCES Student(student_id),
+  FOREIGN KEY (book_id) REFERENCES Book(book_id)
+);</pre>
+      </div>
+      <button class="btn secondary" onclick="resetDemo()">Reset Demo Data</button>
+    </section>
+
+    <div class="footer">Library Management System · DBMS Mini Project Demo</div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const initialData = {
+  students: [
+    {id:1,name:"Rahul",prn:"202456108001",department:"CSE",phone:"9876543210"},
+    {id:2,name:"Amit",prn:"202456108002",department:"CSE",phone:"9876543211"},
+    {id:3,name:"Priya",prn:"202456108003",department:"CSE",phone:"9876543212"}
+  ],
+  books: [
+    {id:101,name:"Java Programming",author:"Herbert Schildt",category:"Programming",quantity:5},
+    {id:102,name:"Database System Concepts",author:"Korth",category:"Database",quantity:4},
+    {id:103,name:"Python Programming",author:"Eric Matthes",category:"Programming",quantity:3},
+    {id:104,name:"Computer Networks",author:"Tanenbaum",category:"Networking",quantity:4}
+  ],
+  issues: [
+    {id:1,studentId:1,bookId:101,issueDate:"2026-10-01",returnDate:""},
+    {id:2,studentId:2,bookId:102,issueDate:"2026-10-03",returnDate:""},
+    {id:3,studentId:3,bookId:103,issueDate:"2026-10-05",returnDate:"2026-10-10"}
+  ]
+};
+let data;
+try {
+  const saved = localStorage.getItem("libraryManagementDemo");
+  data = saved ? JSON.parse(saved) : structuredClone(initialData);
+} catch(e) { data = JSON.parse(JSON.stringify(initialData)); }
+
+function saveData() {
+  localStorage.setItem("libraryManagementDemo", JSON.stringify(data));
+  renderAll();
+}
+function showToast(message) {
+  const t = document.getElementById("toast");
+  t.textContent = message; t.style.display = "block";
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(() => t.style.display = "none", 2800);
+}
+function showPage(pageId) {
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === pageId));
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.page === pageId));
+  if(pageId === "issues") populateIssueOptions();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".nav-btn").forEach(btn => btn.addEventListener("click", () => showPage(btn.dataset.page)));
+function toggleForm(id, force) {
+  const form = document.getElementById(id);
+  form.style.display = force === undefined ? (form.style.display === "none" ? "block" : "none") : (force ? "block" : "none");
+}
+function getStudent(id) { return data.students.find(s => s.id === Number(id)); }
+function getBook(id) { return data.books.find(b => b.id === Number(id)); }
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+function renderDashboard() {
+  document.getElementById("studentCount").textContent = data.students.length;
+  document.getElementById("titleCount").textContent = data.books.length;
+  document.getElementById("copyCount").textContent = data.books.reduce((sum,b) => sum + Number(b.quantity),0);
+  document.getElementById("issuedCount").textContent = data.issues.filter(i => !i.returnDate).length;
+  const recent = [...data.issues].sort((a,b) => b.id-a.id).slice(0,5);
+  document.getElementById("recentIssues").innerHTML = recent.length ? recent.map(i => {
+    const s=getStudent(i.studentId), b=getBook(i.bookId);
+    return `<tr><td>${esc(s?.name || "Unknown")}</td><td>${esc(b?.name || "Unknown")}</td><td>${esc(i.issueDate)}</td><td><span class="badge ${i.returnDate?'green':'orange'}">${i.returnDate?'Returned':'Issued'}</span></td></tr>`;
+  }).join("") : '<tr><td colspan="4" class="empty">No issue records yet.</td></tr>';
+}
+function renderStudents() {
+  const q=(document.getElementById("studentSearch")?.value || "").toLowerCase();
+  const rows=data.students.filter(s => [s.name,s.prn,s.department,String(s.id)].some(v => String(v).toLowerCase().includes(q)));
+  document.getElementById("studentRows").innerHTML = rows.length ? rows.map(s=>`<tr><td>${s.id}</td><td>${esc(s.name)}</td><td>${esc(s.prn)}</td><td>${esc(s.department)}</td><td>${esc(s.phone)}</td></tr>`).join("") : '<tr><td colspan="5" class="empty">No matching students.</td></tr>';
+}
+function renderBooks() {
+  const q=(document.getElementById("bookSearch")?.value || "").toLowerCase();
+  const rows=data.books.filter(b => [b.name,b.author,b.category,String(b.id)].some(v=>String(v).toLowerCase().includes(q)));
+  document.getElementById("bookRows").innerHTML = rows.length ? rows.map(b=>`<tr><td>${b.id}</td><td>${esc(b.name)}</td><td>${esc(b.author)}</td><td>${esc(b.category)}</td><td><span class="badge ${b.quantity>0?'green':'orange'}">${b.quantity}</span></td></tr>`).join("") : '<tr><td colspan="5" class="empty">No matching books.</td></tr>';
+}
+function renderIssues() {
+  const q=(document.getElementById("issueSearch")?.value || "").toLowerCase();
+  const rows=[...data.issues].sort((a,b)=>b.id-a.id).filter(i => {
+    const s=getStudent(i.studentId), b=getBook(i.bookId);
+    return [s?.name,b?.name,String(i.id)].some(v=>String(v||"").toLowerCase().includes(q));
+  });
+  document.getElementById("issueRows").innerHTML = rows.length ? rows.map(i=>{
+    const s=getStudent(i.studentId), b=getBook(i.bookId);
+    const action=i.returnDate ? '<span class="badge green">Returned</span>' : `<button class="btn green" onclick="returnBook(${i.id})">Return</button>`;
+    return `<tr><td>${i.id}</td><td>${esc(s?.name||"Unknown")}</td><td>${esc(b?.name||"Unknown")}</td><td>${esc(i.issueDate)}</td><td>${i.returnDate?esc(i.returnDate):'—'}</td><td>${action}</td></tr>`;
+  }).join("") : '<tr><td colspan="6" class="empty">No matching issue records.</td></tr>';
+}
+function populateIssueOptions() {
+  const s=document.getElementById("iStudent"), b=document.getElementById("iBook");
+  const oldS=s.value, oldB=b.value;
+  s.innerHTML=data.students.map(x=>`<option value="${x.id}">${esc(x.name)} (ID ${x.id})</option>`).join("");
+  b.innerHTML=data.books.filter(x=>x.quantity>0).map(x=>`<option value="${x.id}">${esc(x.name)} (${x.quantity} available)</option>`).join("");
+  if(oldS) s.value=oldS; if(oldB) b.value=oldB;
+  if(!data.students.length) s.innerHTML='<option value="">Add a student first</option>';
+  if(!data.books.some(x=>x.quantity>0)) b.innerHTML='<option value="">No available books</option>';
+}
+function addStudent(event) {
+  event.preventDefault();
+  const id=Number(document.getElementById("sId").value);
+  if(data.students.some(s=>s.id===id)){showToast("That student ID already exists.");return;}
+  const prn=document.getElementById("sPrn").value.trim();
+  if(data.students.some(s=>s.prn.toLowerCase()===prn.toLowerCase())){showToast("That PRN already exists.");return;}
+  data.students.push({id,name:document.getElementById("sName").value.trim(),prn,department:document.getElementById("sDept").value.trim(),phone:document.getElementById("sPhone").value.trim()});
+  saveData(); event.target.reset(); document.getElementById("sDept").value="CSE"; toggleForm("studentForm",false); showToast("Student added successfully.");
+}
+function addBook(event) {
+  event.preventDefault();
+  const id=Number(document.getElementById("bId").value);
+  if(data.books.some(b=>b.id===id)){showToast("That book ID already exists.");return;}
+  data.books.push({id,name:document.getElementById("bName").value.trim(),author:document.getElementById("bAuthor").value.trim(),category:document.getElementById("bCategory").value.trim(),quantity:Number(document.getElementById("bQty").value)});
+  saveData(); event.target.reset(); document.getElementById("bQty").value=1; toggleForm("bookForm",false); showToast("Book added successfully.");
+}
+function issueBook(event) {
+  event.preventDefault();
+  const id=Number(document.getElementById("iId").value);
+  const studentId=Number(document.getElementById("iStudent").value);
+  const bookId=Number(document.getElementById("iBook").value);
+  const book=getBook(bookId);
+  if(data.issues.some(i=>i.id===id)){showToast("That issue ID already exists.");return;}
+  if(!getStudent(studentId)){showToast("Please select a valid student.");return;}
+  if(!book || book.quantity<1){showToast("No copies of this book are available.");return;}
+  data.issues.push({id,studentId,bookId,issueDate:document.getElementById("iDate").value,returnDate:""});
+  book.quantity--;
+  saveData(); event.target.reset(); document.getElementById("iDate").value=new Date().toISOString().slice(0,10); populateIssueOptions(); showToast("Book issued successfully.");
+}
+function returnBook(issueId) {
+  const issue=data.issues.find(i=>i.id===issueId);
+  if(!issue || issue.returnDate) return;
+  issue.returnDate=new Date().toISOString().slice(0,10);
+  const book=getBook(issue.bookId);
+  if(book) book.quantity++;
+  saveData(); populateIssueOptions(); showToast("Book returned successfully.");
+}
+function resetDemo() {
+  if(!confirm("Reset all browser demo data to the original sample records?")) return;
+  data=JSON.parse(JSON.stringify(initialData));
+  saveData(); showToast("Demo data has been reset.");
+}
+function renderAll() { renderDashboard(); renderStudents(); renderBooks(); renderIssues(); populateIssueOptions(); }
+document.getElementById("iDate").value=new Date().toISOString().slice(0,10);
+renderAll();
+</script>
+</body>
+</html>
